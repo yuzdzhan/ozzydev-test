@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modern CSS Tricks I Reach For Daily — OzzyDev</title>
+  <meta name="description" content="Container queries, :has(), color-mix, and more — practical CSS that ships in every browser today." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <script src="../assets/js/main.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a href="../index.html" class="brand"><span class="logo">O</span> Ozzy<span class="accent">Dev</span></a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="../blog.html">Blog</a></li>
+          <li><a href="../about.html">About</a></li>
+          <li><a href="../contact.html">Contact</a></li>
+        </ul>
+      </nav>
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <button class="theme-toggle" aria-label="Toggle theme">☀️</button>
+        <button class="nav-toggle" aria-label="Menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <article class="article">
+      <header class="article-header">
+        <div class="tags"><span class="tag">CSS</span><span class="tag">Tutorial</span></div>
+        <h1>Modern CSS Tricks I Reach For Daily</h1>
+        <div class="article-meta">
+          <span class="avatar">O</span>
+          <span>OzzyDev Team</span>
+          <span style="width:3px;height:3px;border-radius:50%;background:var(--text-muted);display:inline-block"></span>
+          <span>May 28, 2026</span>
+          <span style="width:3px;height:3px;border-radius:50%;background:var(--text-muted);display:inline-block"></span>
+          <span>5 min read</span>
+        </div>
+      </header>
+
+      <div class="article-body">
+        <p>
+          CSS quietly got incredible. A lot of the JavaScript and preprocessor hacks we relied on
+          for years are now one-liners in plain CSS — shipping in every evergreen browser. Here are
+          the features that earned a permanent spot in our toolbox.
+        </p>
+
+        <h2>Container queries</h2>
+        <p>
+          Media queries respond to the <em>viewport</em>. Container queries respond to the
+          <em>component's own width</em> — so a card can lay itself out based on the space it's
+          actually given, not the whole screen. This is the real win for reusable components.
+        </p>
+        <pre><code>.card-wrap { container-type: inline-size; }
+
+/* When the CARD is wider than 400px, go horizontal */
+@container (min-width: 400px) {
+  .card { display: grid; grid-template-columns: 120px 1fr; }
+}</code></pre>
+
+        <h2>The :has() parent selector</h2>
+        <p>
+          For two decades CSS could only style children based on parents. <code>:has()</code> finally
+          lets a parent react to its children — the long-awaited "parent selector."
+        </p>
+        <pre><code>/* Style a form field that contains an invalid input */
+.field:has(input:invalid) { border-color: crimson; }
+
+/* A card with no image gets extra padding */
+.card:not(:has(img)) { padding-block: 2rem; }</code></pre>
+        <div class="callout">
+          <strong>Underrated power move:</strong> <code>:has()</code> can replace a surprising amount
+          of JavaScript that exists only to toggle a class on a parent element.
+        </div>
+
+        <h2>color-mix() for theming</h2>
+        <p>
+          Need a tint of your brand color for a hover state or a translucent background? Mix it in
+          CSS — no extra variables, no preprocessor functions.
+        </p>
+        <pre><code>:root { --brand: #58a6ff; }
+
+.badge {
+  background: color-mix(in srgb, var(--brand) 15%, transparent);
+  color: var(--brand);
+}
+.btn:hover {
+  background: color-mix(in srgb, var(--brand) 85%, black);
+}</code></pre>
+
+        <h2>Fluid type with clamp()</h2>
+        <p>
+          One line scales a font smoothly between a minimum and maximum size — no breakpoints
+          required.
+        </p>
+        <pre><code>h1 {
+  /* min 2rem, scales with viewport, never exceeds 3.6rem */
+  font-size: clamp(2rem, 5vw, 3.6rem);
+}</code></pre>
+
+        <h2>Logical properties</h2>
+        <p>
+          Use <code>margin-inline</code> and <code>padding-block</code> instead of left/right/top/bottom
+          and your layouts adapt automatically to right-to-left languages and vertical writing modes.
+        </p>
+        <pre><code>.container {
+  margin-inline: auto;     /* left + right */
+  padding-block: 2rem;     /* top + bottom */
+}</code></pre>
+
+        <h2>Scroll-driven niceties</h2>
+        <p>
+          Smooth scrolling and snap points need zero JavaScript now.
+        </p>
+        <pre><code>html { scroll-behavior: smooth; }
+
+.gallery {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+.gallery > * { scroll-snap-align: center; }</code></pre>
+
+        <blockquote>
+          The best CSS trick in 2026 is realizing how little CSS you now need to write.
+        </blockquote>
+
+        <p>
+          Most of these are already in the stylesheet powering this very blog. Pop open your dev
+          tools and have a look — then go delete some JavaScript.
+        </p>
+      </div>
+
+      <footer class="article-footer">
+        <a href="../blog.html" class="btn btn-ghost">← Back to all posts</a>
+      </footer>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <p>© <span data-year>2026</span> OzzyDev. Built with HTML, CSS &amp; a lot of curiosity.</p>
+      <ul class="footer-links">
+        <li><a href="../blog.html">Blog</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+        <li><a href="#">RSS</a></li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>

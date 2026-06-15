@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5 Prompt Patterns That Actually Work — OzzyDev</title>
+  <meta name="description" content="Reusable prompt structures that get more reliable output from any modern LLM." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <script src="../assets/js/main.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a href="../index.html" class="brand"><span class="logo">O</span> Ozzy<span class="accent">Dev</span></a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="../blog.html">Blog</a></li>
+          <li><a href="../about.html">About</a></li>
+          <li><a href="../contact.html">Contact</a></li>
+        </ul>
+      </nav>
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <button class="theme-toggle" aria-label="Toggle theme">☀️</button>
+        <button class="nav-toggle" aria-label="Menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <article class="article">
+      <header class="article-header">
+        <div class="tags"><span class="tag">AI</span><span class="tag">Prompting</span></div>
+        <h1>5 Prompt Patterns That Actually Work</h1>
+        <div class="article-meta">
+          <span class="avatar">O</span>
+          <span>OzzyDev Team</span>
+          <span style="width:3px;height:3px;border-radius:50%;background:var(--text-muted);display:inline-block"></span>
+          <span>Jun 3, 2026</span>
+          <span style="width:3px;height:3px;border-radius:50%;background:var(--text-muted);display:inline-block"></span>
+          <span>7 min read</span>
+        </div>
+      </header>
+
+      <div class="article-body">
+        <p>
+          "Prompt engineering" sounds fancier than it is. Most of the gains come from a small set
+          of reusable structures. Here are the five we reach for constantly — each one turns vague,
+          inconsistent output into something you can actually build on.
+        </p>
+
+        <h2>1. Role + Task + Format</h2>
+        <p>
+          The simplest upgrade to any prompt: state who the model should be, what it should do, and
+          exactly how to shape the answer.
+        </p>
+        <pre><code>You are a senior technical editor.
+Rewrite the text below to be clear and concise.
+Return only the rewritten text — no preamble, no explanation.
+
+TEXT:
+{{input}}</code></pre>
+
+        <h2>2. Few-shot examples</h2>
+        <p>
+          Don't describe the format — <em>show</em> it. Two or three examples teach the model your
+          desired pattern faster than a paragraph of instructions.
+        </p>
+        <pre><code>Classify the sentiment as positive, negative, or neutral.
+
+Review: "Best purchase I've made all year." → positive
+Review: "It broke after one day." → negative
+Review: "It arrived on time." → neutral
+Review: "{{input}}" →</code></pre>
+
+        <h2>3. Chain-of-thought, then answer</h2>
+        <p>
+          For anything involving reasoning, ask the model to think step by step <em>before</em>
+          committing to an answer. Then separate the reasoning from the final result so it's easy
+          to parse.
+        </p>
+        <pre><code>Solve the problem. First reason step by step under "Reasoning:".
+Then give the final result under "Answer:" on its own line.
+
+Problem: {{input}}</code></pre>
+        <div class="callout">
+          <strong>Why it works:</strong> a model that "shows its work" allocates more computation to
+          the hard part of the problem instead of blurting out the first plausible token.
+        </div>
+
+        <h2>4. Output contracts (structured JSON)</h2>
+        <p>
+          When the output feeds code, demand a strict schema and forbid anything outside it. This is
+          the single biggest reliability win for app integrations.
+        </p>
+        <pre><code>Extract the fields below. Respond with ONLY valid JSON, no markdown fences.
+
+{
+  "title": string,
+  "tags": string[],
+  "difficulty": "easy" | "medium" | "hard"
+}
+
+ARTICLE:
+{{input}}</code></pre>
+        <p>
+          Even better, validate the result against a schema and re-prompt on failure — most modern
+          model APIs can also enforce a JSON schema for you natively.
+        </p>
+
+        <h2>5. The "I don't know" escape hatch</h2>
+        <p>
+          Hallucination usually happens because the model thinks it <em>must</em> answer. Give it
+          explicit permission to refuse, and it will refuse instead of inventing.
+        </p>
+        <pre><code>Answer using only the context provided.
+If the context doesn't contain the answer, reply exactly: "Not found in the provided material."
+Never guess.</code></pre>
+
+        <h2>Putting it together</h2>
+        <p>
+          These patterns stack. A production prompt often combines a <strong>role</strong>, a couple
+          of <strong>few-shot examples</strong>, a <strong>JSON contract</strong>, and an
+          <strong>escape hatch</strong> — all in one. Start simple, add structure only where you
+          see failures, and keep a few real test inputs around so you know when a change helps.
+        </p>
+
+        <blockquote>
+          A prompt is just an API contract written in English. Treat it like one: be explicit,
+          handle the edge cases, and test it.
+        </blockquote>
+
+        <p>
+          Ready to wire prompts into a real app? See
+          <a href="build-rag-chatbot.html">Build a RAG Chatbot in an Afternoon</a>.
+        </p>
+      </div>
+
+      <footer class="article-footer">
+        <a href="../blog.html" class="btn btn-ghost">← Back to all posts</a>
+      </footer>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <p>© <span data-year>2026</span> OzzyDev. Built with HTML, CSS &amp; a lot of curiosity.</p>
+      <ul class="footer-links">
+        <li><a href="../blog.html">Blog</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+        <li><a href="#">RSS</a></li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>

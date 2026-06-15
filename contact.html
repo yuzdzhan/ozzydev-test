@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — OzzyDev</title>
+  <meta name="description" content="Get in touch with OzzyDev — questions, topic suggestions, or corrections welcome." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <script src="assets/js/main.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a href="index.html" class="brand"><span class="logo">O</span> Ozzy<span class="accent">Dev</span></a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <button class="theme-toggle" aria-label="Toggle theme">☀️</button>
+        <button class="nav-toggle" aria-label="Menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <h1>Get in touch</h1>
+        <p>Topic ideas, guest posts, corrections, or just a friendly hello — drop us a line.</p>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:1.5rem">
+      <div class="container">
+        <form class="form-grid" data-demo>
+          <div class="field">
+            <label for="name">Name</label>
+            <input id="name" type="text" placeholder="Ada Lovelace" required />
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="you@example.com" required />
+          </div>
+          <div class="field">
+            <label for="message">Message</label>
+            <textarea id="message" placeholder="What's on your mind?" required></textarea>
+          </div>
+          <div>
+            <button class="btn btn-primary" type="submit">Send message</button>
+            <p class="form-note" data-msg>This is a static demo form — submissions aren't sent anywhere.</p>
+          </div>
+        </form>
+
+        <div class="prose" style="margin-top:3rem">
+          <h2>Other ways to reach us</h2>
+          <ul>
+            <li><strong>Email:</strong> <a href="mailto:hello@ozzydev.com">hello@ozzydev.com</a></li>
+            <li><strong>Mastodon:</strong> <a href="#">@ozzydev@fosstodon.org</a></li>
+            <li><strong>GitHub:</strong> <a href="#">github.com/ozzydev</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <p>© <span data-year>2026</span> OzzyDev. Built with HTML, CSS &amp; a lot of curiosity.</p>
+      <ul class="footer-links">
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="#">RSS</a></li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>

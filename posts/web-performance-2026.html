@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web Performance in 2026: The Short List — OzzyDev</title>
+  <meta name="description" content="The handful of techniques that still move the needle on Core Web Vitals — and the ones you can finally stop worrying about." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <script src="../assets/js/main.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a href="../index.html" class="brand"><span class="logo">O</span> Ozzy<span class="accent">Dev</span></a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="../blog.html">Blog</a></li>
+          <li><a href="../about.html">About</a></li>
+          <li><a href="../contact.html">Contact</a></li>
+        </ul>
+      </nav>
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <button class="theme-toggle" aria-label="Toggle theme">☀️</button>
+        <button class="nav-toggle" aria-label="Menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <article class="article">
+      <header class="article-header">
+        <div class="tags"><span class="tag">Frontend</span><span class="tag">Performance</span></div>
+        <h1>Web Performance in 2026: The Short List</h1>
+        <div class="article-meta">
+          <span class="avatar">O</span>
+          <span>OzzyDev Team</span>
+          <span style="width:3px;height:3px;border-radius:50%;background:var(--text-muted);display:inline-block"></span>
+          <span>Jun 8, 2026</span>
+          <span style="width:3px;height:3px;border-radius:50%;background:var(--text-muted);display:inline-block"></span>
+          <span>6 min read</span>
+        </div>
+      </header>
+
+      <div class="article-body">
+        <p>
+          Web performance advice has a habit of piling up. Every year brings a new list of fifty
+          things to optimize, and most of them save you three milliseconds. So we did the opposite:
+          here are the <strong>few techniques that still genuinely matter in 2026</strong>, plus a
+          short list of things you can stop stressing about.
+        </p>
+
+        <h2>The metrics that count</h2>
+        <p>
+          Core Web Vitals are still the scoreboard. In practice you're chasing three numbers:
+        </p>
+        <ul>
+          <li><strong>LCP</strong> (Largest Contentful Paint) — how fast the main content shows up. Aim for under 2.5s.</li>
+          <li><strong>INP</strong> (Interaction to Next Paint) — how snappy the page feels when tapped. Aim for under 200ms.</li>
+          <li><strong>CLS</strong> (Cumulative Layout Shift) — how much the page jumps around. Aim for under 0.1.</li>
+        </ul>
+
+        <h2>1. Ship less JavaScript</h2>
+        <p>
+          This is still the highest-leverage change you can make. Every kilobyte of JS has to be
+          downloaded, parsed, and executed — usually on a phone slower than your dev machine.
+          Measure your bundle, then cut.
+        </p>
+        <pre><code># See what's actually in your bundle
+npx vite-bundle-visualizer
+# or for webpack
+npx webpack-bundle-analyzer dist/stats.json</code></pre>
+        <div class="callout">
+          <strong>Rule of thumb:</strong> if a feature can be done with HTML and CSS, don't reach
+          for JavaScript. A <code>&lt;details&gt;</code> element beats a hand-rolled accordion every time.
+        </div>
+
+        <h2>2. Reserve space for images and embeds</h2>
+        <p>
+          Layout shift almost always comes from elements that load late and push content around.
+          Always set dimensions so the browser can reserve the space up front.
+        </p>
+        <pre><code>&lt;img src="hero.webp" width="1200" height="630" alt="…" /&gt;
+
+/* Or with the aspect-ratio property */
+.embed { aspect-ratio: 16 / 9; width: 100%; }</code></pre>
+
+        <h2>3. Prioritize the hero image</h2>
+        <p>
+          Your LCP element is usually the big image at the top. Tell the browser it's important and
+          let everything below it load lazily.
+        </p>
+        <pre><code>&lt;img src="hero.webp" fetchpriority="high" alt="…" /&gt;
+&lt;img src="below-the-fold.webp" loading="lazy" alt="…" /&gt;</code></pre>
+
+        <h2>4. Use modern image formats</h2>
+        <p>
+          AVIF and WebP routinely cut image weight by 30&ndash;60% versus JPEG with no visible
+          quality loss. Serve them with a fallback and you're done.
+        </p>
+        <pre><code>&lt;picture&gt;
+  &lt;source srcset="photo.avif" type="image/avif" /&gt;
+  &lt;source srcset="photo.webp" type="image/webp" /&gt;
+  &lt;img src="photo.jpg" alt="…" /&gt;
+&lt;/picture&gt;</code></pre>
+
+        <h2>What you can stop worrying about</h2>
+        <ul>
+          <li><strong>Micro-optimizing CSS selectors.</strong> The browser is faster than your intuition.</li>
+          <li><strong>Inlining every critical style by hand.</strong> Your framework or build tool does this well now.</li>
+          <li><strong>Domain sharding &amp; sprite sheets.</strong> HTTP/2 and HTTP/3 made these obsolete.</li>
+        </ul>
+
+        <blockquote>
+          Performance isn't a checklist you complete once. It's a budget you defend on every PR.
+        </blockquote>
+
+        <p>
+          Measure with real-user data (the Chrome UX Report or your own RUM), set a budget, and
+          fail the build when you blow it. That single habit beats any clever trick.
+        </p>
+      </div>
+
+      <footer class="article-footer">
+        <a href="../blog.html" class="btn btn-ghost">← Back to all posts</a>
+      </footer>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <p>© <span data-year>2026</span> OzzyDev. Built with HTML, CSS &amp; a lot of curiosity.</p>
+      <ul class="footer-links">
+        <li><a href="../blog.html">Blog</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+        <li><a href="#">RSS</a></li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Build a RAG Chatbot in an Afternoon — OzzyDev</title>
+  <meta name="description" content="Retrieval-augmented generation, demystified — from chunking your docs to grounding answers with citations." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <script src="../assets/js/main.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a href="../index.html" class="brand"><span class="logo">O</span> Ozzy<span class="accent">Dev</span></a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="../blog.html">Blog</a></li>
+          <li><a href="../about.html">About</a></li>
+          <li><a href="../contact.html">Contact</a></li>
+        </ul>
+      </nav>
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <button class="theme-toggle" aria-label="Toggle theme">☀️</button>
+        <button class="nav-toggle" aria-label="Menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <article class="article">
+      <header class="article-header">
+        <div class="tags"><span class="tag">AI</span><span class="tag">RAG</span><span class="tag">Tutorial</span></div>
+        <h1>Build a RAG Chatbot in an Afternoon</h1>
+        <div class="article-meta">
+          <span class="avatar">O</span>
+          <span>OzzyDev Team</span>
+          <span class="dot" style="width:3px;height:3px;border-radius:50%;background:var(--text-muted);display:inline-block"></span>
+          <span>Jun 12, 2026</span>
+          <span class="dot" style="width:3px;height:3px;border-radius:50%;background:var(--text-muted);display:inline-block"></span>
+          <span>8 min read</span>
+        </div>
+      </header>
+
+      <div class="article-body">
+        <p>
+          Large language models are brilliant generalists and terrible specialists. Ask one about
+          <em>your</em> product docs, <em>your</em> internal wiki, or last week's release notes, and
+          you'll get a confident answer that may be entirely invented. <strong>Retrieval-augmented
+          generation (RAG)</strong> fixes this by giving the model the relevant facts at question
+          time — so it answers from your data instead of its imagination.
+        </p>
+
+        <p>Here's the entire pattern in one sentence: <strong>find the most relevant chunks of your documents, paste them into the prompt, and ask the model to answer using only those chunks.</strong> Let's build it.</p>
+
+        <h2>The four moving parts</h2>
+        <ol>
+          <li><strong>Ingest</strong> — split documents into bite-sized chunks.</li>
+          <li><strong>Embed</strong> — turn each chunk into a vector and store it.</li>
+          <li><strong>Retrieve</strong> — embed the user's question, find the nearest chunks.</li>
+          <li><strong>Generate</strong> — hand those chunks to the LLM and ask it to answer.</li>
+        </ol>
+
+        <h2>1. Chunk your documents</h2>
+        <p>
+          Models have limited context and retrieval works best on focused passages. A good default
+          is ~500&ndash;800 tokens per chunk with a little overlap so you don't slice a sentence in half.
+        </p>
+        <pre><code>function chunk(text, size = 600, overlap = 80) {
+  const words = text.split(/\s+/);
+  const chunks = [];
+  for (let i = 0; i &lt; words.length; i += size - overlap) {
+    chunks.push(words.slice(i, i + size).join(" "));
+  }
+  return chunks;
+}</code></pre>
+
+        <h2>2. Embed and store</h2>
+        <p>
+          An embedding turns text into a list of numbers that captures meaning. Similar text lands
+          near similar text. Store the vectors in any vector database — or, for a small project, an
+          in-memory array is genuinely fine.
+        </p>
+        <pre><code>// Pseudocode — works with any embeddings provider
+const store = [];
+for (const c of chunks) {
+  const vector = await embed(c);        // returns number[]
+  store.push({ text: c, vector });
+}</code></pre>
+
+        <div class="callout">
+          <strong>Tip:</strong> Don't reach for a managed vector DB on day one. Start in memory,
+          prove the idea works, then scale to a real store (pgvector, Qdrant, Pinecone…) when you
+          actually have the volume to justify it.
+        </div>
+
+        <h2>3. Retrieve the closest chunks</h2>
+        <p>
+          Cosine similarity is the standard distance metric. Embed the question, score every chunk,
+          and keep the top few.
+        </p>
+        <pre><code>function cosine(a, b) {
+  let dot = 0, na = 0, nb = 0;
+  for (let i = 0; i &lt; a.length; i++) {
+    dot += a[i] * b[i];
+    na += a[i] * a[i];
+    nb += b[i] * b[i];
+  }
+  return dot / (Math.sqrt(na) * Math.sqrt(nb));
+}
+
+async function retrieve(question, k = 4) {
+  const q = await embed(question);
+  return store
+    .map(item =&gt; ({ ...item, score: cosine(q, item.vector) }))
+    .sort((a, b) =&gt; b.score - a.score)
+    .slice(0, k);
+}</code></pre>
+
+        <h2>4. Generate a grounded answer</h2>
+        <p>
+          The magic is in the prompt. Tell the model to answer <em>only</em> from the provided
+          context and to admit when it doesn't know.
+        </p>
+        <pre><code>async function answer(question) {
+  const hits = await retrieve(question);
+  const context = hits.map((h, i) =&gt; `[${i + 1}] ${h.text}`).join("\n\n");
+
+  const prompt = `Answer the question using ONLY the context below.
+If the answer isn't there, say "I don't know."
+Cite sources like [1], [2].
+
+Context:
+${context}
+
+Question: ${question}`;
+
+  return await llm(prompt);   // your model call
+}</code></pre>
+
+        <p>
+          That's it. Roughly fifty lines and you have a chatbot that answers from your own
+          documents with citations. No fine-tuning, no GPU, no PhD.
+        </p>
+
+        <h2>Where to go next</h2>
+        <ul>
+          <li><strong>Re-ranking</strong> — run a cross-encoder over the top 20 hits to sharpen the top 4.</li>
+          <li><strong>Hybrid search</strong> — combine keyword (BM25) with vector search for names and IDs.</li>
+          <li><strong>Evaluation</strong> — build a tiny set of question/answer pairs and measure before you tweak.</li>
+        </ul>
+
+        <blockquote>
+          RAG isn't a product — it's plumbing. Get the retrieval right and the model almost takes
+          care of itself.
+        </blockquote>
+
+        <p>
+          Want the prompt patterns that make the generation step more reliable? Read
+          <a href="prompt-engineering-patterns.html">5 Prompt Patterns That Actually Work</a> next.
+        </p>
+      </div>
+
+      <footer class="article-footer">
+        <a href="../blog.html" class="btn btn-ghost">← Back to all posts</a>
+      </footer>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <p>© <span data-year>2026</span> OzzyDev. Built with HTML, CSS &amp; a lot of curiosity.</p>
+      <ul class="footer-links">
+        <li><a href="../blog.html">Blog</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+        <li><a href="#">RSS</a></li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>
