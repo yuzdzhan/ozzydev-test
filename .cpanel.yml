@@ -1,0 +1,8 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/inobagsc/blog1.inomedia.bg
+    - /bin/mkdir -p $DEPLOYPATH/assets $DEPLOYPATH/posts
+    - /bin/cp -f index.html blog.html about.html contact.html $DEPLOYPATH/
+    - /bin/cp -Rf assets/. $DEPLOYPATH/assets/
+    - /bin/cp -Rf posts/. $DEPLOYPATH/posts/
